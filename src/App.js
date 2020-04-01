@@ -1,26 +1,48 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import UserCardList from "./components/UserCardList";
+import "./App.css";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  state = {
+    textInput: "",
+    users: []
+  };
+
+  handleChange = event => {
+    this.setState({
+      textInput: event.target.value
+    });
+  };
+
+  handleSubmit = async event => {
+    event.preventDefault();
+    const userName = this.state.textInput;
+    const response = await fetch(`https://api.github.com/users/${userName}`);
+    const info = await response.json();
+    console.log(response);
+    this.setState({
+      users: [...this.state.users, info]
+    });
+  };
+
+  render() {
+    return (
+      <div className="App">
+        <form onSubmit={this.handleSubmit}>
+          <label>
+            Input Github User
+            <input
+              type="text"
+              value={this.state.textInput}
+              placeholder="user name"
+              onChange={this.handleChange}
+            />
+          </label>
+          <button type="submit">Submit</button>
+          <UserCardList usersInfo={this.state.users} />
+        </form>
+      </div>
+    );
+  }
 }
-
 export default App;
